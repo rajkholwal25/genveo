@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% from "_macros.html" import gallery_manager %}
+{% block title %}Edit Profile — Genveo{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card" style="max-width: 520px;">
+    <h2>Edit Profile</h2>
+    <p class="auth-subtitle">Update your creator details and photos</p>
+
+    <form method="POST" action="{{ url_for('influencer.profile') }}" enctype="multipart/form-data">
+      <div class="avatar-edit">
+        <label class="avatar-edit-circle" {% if profile.avatar_url %}data-has="1"{% endif %}>
+          <img src="{{ profile.avatar_url or '' }}" alt="" class="avatar-edit-img">
+          <span class="avatar-edit-initial">{{ (profile.full_name or '?')[0]|upper }}</span>
+          <span class="avatar-edit-overlay"><svg class="icon"><use href="#i-post"/></svg></span>
+          <input type="file" name="avatar" accept="image/*">
+        </label>
+        <div class="avatar-edit-text">
+          <strong>Profile picture</strong>
+          <small>Click the circle to upload — it replaces the initial on your card</small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="full_name">Full Name</label>
+        <input type="text" id="full_name" name="full_name" value="{{ profile.full_name }}" required>
+      </div>
+
+      <div class="form-group">
+        <label for="category_id">Category</label>
+        <select id="category_id" name="category_id" required>
+          {% for cat in categories %}
+          <option value="{{ cat.id }}" {% if cat.id == profile.category_id %}selected{% endif %}>
+            {{ cat.icon }} {{ cat.name }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="instagram_handle">Instagram Profile URL or @username</label>
+        <input type="text" id="instagram_handle" name="instagram_handle"
+               value="{{ profile.instagram_url or profile.profile_url }}" required>
+        <small class="field-hint">Paste link or @handle — username auto-detected</small>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="followers">Followers</label>
+          <input type="text" id="followers" name="followers" value="{{ profile.followers }}" placeholder="1.1M">
+        </div>
+        <div class="form-group">
+          <label for="monthly_reach">Monthly Reach</label>
+          <input type="text" id="monthly_reach" name="monthly_reach" value="{{ profile.monthly_reach }}" placeholder="2.5M">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="reel_pricing">Reel Pricing (₹)</label>
+          <input type="number" id="reel_pricing" name="reel_pricing" value="{{ profile.reel_pricing|int }}" required min="0" step="1">
+        </div>
+        <div class="form-group">
+          <label for="story_pricing">Story Pricing (₹)</label>
+          <input type="number" id="story_pricing" name="story_pricing" value="{{ profile.story_pricing|int }}" required min="0" step="1">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="post_pricing">Post Pricing (₹)</label>
+        <input type="number" id="post_pricing" name="post_pricing" value="{{ profile.post_pricing|int }}" required min="0" step="1">
+      </div>
+
+      <div class="form-group">
+        <label for="bio">Bio</label>
+        <textarea id="bio" name="bio">{{ profile.bio or '' }}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Showcase Photos <span class="field-hint" style="display:inline">({{ profile.photos|length }}/6 — add at least 2)</span></label>
+        {{ gallery_manager(profile.photos, 'influencer.delete_profile_photo') }}
+        <label class="file-drop">
+          <svg class="icon"><use href="#i-post"/></svg>
+          <span>Click to choose photos (JPG, PNG, WEBP)</span>
+          <span class="file-names"></span>
+          <input type="file" name="photos" accept="image/*" multiple>
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+      <a href="{{ url_for('influencer.dashboard') }}" class="btn btn-ghost btn-block" style="margin-top: 12px;">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

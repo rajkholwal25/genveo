@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% from "_macros.html" import cat_icon, avatar %}
+{% block title %}Brand Dashboard — Genveo{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+    <div style="display: flex; align-items: center; gap: 16px;">
+      {% if profile %}{{ avatar(profile.company_name, profile.avatar_url, 'avatar-lg') }}{% endif %}
+      <div>
+        <h1>Hey, {{ profile.company_name if profile else 'Brand' }}</h1>
+        <p>Pick a category to discover top influencers for your next campaign</p>
+      </div>
+    </div>
+    {% if profile %}
+    <a href="{{ url_for('brand.profile') }}" class="btn btn-ghost btn-sm"><svg class="icon"><use href="#i-pencil"/></svg> Edit Profile</a>
+    {% endif %}
+  </div>
+
+  {% if profile %}
+  <div class="gallery-panel">
+    <div class="panel-head">
+      <h2 class="section-title" style="margin: 0;"><svg class="icon"><use href="#i-post"/></svg> Your Photos</h2>
+      <a href="{{ url_for('brand.profile') }}" class="btn btn-primary btn-sm"><svg class="icon"><use href="#i-plus"/></svg> Add Photos</a>
+    </div>
+    {% if profile.photos %}
+    <div class="photo-strip">
+      {% for p in profile.photos %}<img src="{{ p.url }}" alt="Your photo {{ loop.index }}" loading="lazy">{% endfor %}
+    </div>
+    {% else %}
+    <div class="photo-empty">
+      <svg class="icon icon-lg" style="color: var(--primary-soft)"><use href="#i-post"/></svg>
+      <span>Add at least 2 photos so creators can recognise your brand on your card.</span>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <h2 class="section-title"><svg class="icon"><use href="#i-grid"/></svg> Browse Categories</h2>
+  <div class="category-grid stagger">
+    {% for cat in categories %}
+    <a href="{{ url_for('brand.category_influencers', slug=cat.slug) }}"
+       class="category-card"
+       style="--cat-color: {{ cat.color }}">
+      <span class="category-icon">{{ cat_icon(cat) }}</span>
+      <span class="category-name">{{ cat.name }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

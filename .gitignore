@@ -1,0 +1,23 @@
+# Secrets / environment
+.env
+.env.*
+!.env.example
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*.db
+
+# Node
+node_modules/
+
+# Uploaded user content (kept in Supabase Storage / local fallback)
+static/uploads/*
+!static/uploads/.gitkeep
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log

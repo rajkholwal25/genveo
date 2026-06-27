@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% from "_macros.html" import gallery, cat_icon, avatar %}
+{% block title %}{{ category.name }} Influencers — Genveo{% endblock %}
+
+{% block content %}
+<div class="container">
+  <a href="{{ url_for('brand.dashboard') }}" class="back-link"><svg class="icon"><use href="#i-arrow-right" style="transform:rotate(180deg);transform-origin:center"/></svg> Back to Categories</a>
+
+  <div class="dashboard-header">
+    <h1>{{ cat_icon(category, 'cat-icon-lg') }} {{ category.name }} Influencers</h1>
+    <p>{{ influencers|length }} creator{{ 's' if influencers|length != 1 else '' }} available for collaboration</p>
+  </div>
+
+  {% if influencers %}
+  <div class="ig-grid">
+    {% for inf in influencers %}
+    <article class="ig-card">
+      <header class="ig-head">
+        {{ avatar(inf.full_name, inf.avatar_url) }}
+        <div class="ig-head-meta">
+          <h3>{{ inf.full_name }}</h3>
+          <a href="{{ inf.profile_url }}" target="_blank" rel="noopener" class="handle insta-link">
+            <svg class="icon"><use href="#i-instagram"/></svg> @{{ inf.instagram_handle }}
+          </a>
+        </div>
+        <span class="ig-cat-badge">{{ cat_icon(category, 'cat-icon-sm') }} {{ category.name }}</span>
+      </header>
+
+      {{ gallery(inf.photos, inf.full_name[0]|upper) }}
+
+      <div class="ig-body">
+        <div class="card-stats">
+          <div class="stat">
+            <div class="stat-value">{{ inf.followers }}</div>
+            <div class="stat-label">Followers</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">{{ inf.monthly_reach }}</div>
+            <div class="stat-label">Monthly Reach</div>
+          </div>
+        </div>
+
+        <div class="pricing-grid">
+          <div class="pricing-item">
+            <span class="pricing-type"><svg class="icon"><use href="#i-reel"/></svg> Reel</span>
+            <span class="pricing-amount">₹{{ "{:,.0f}".format(inf.reel_pricing) }}</span>
+          </div>
+          <div class="pricing-item">
+            <span class="pricing-type"><svg class="icon"><use href="#i-story"/></svg> Story</span>
+            <span class="pricing-amount">₹{{ "{:,.0f}".format(inf.story_pricing) }}</span>
+          </div>
+          <div class="pricing-item">
+            <span class="pricing-type"><svg class="icon"><use href="#i-post"/></svg> Post</span>
+            <span class="pricing-amount">₹{{ "{:,.0f}".format(inf.post_pricing) }}</span>
+          </div>
+        </div>
+
+        {% if inf.bio %}
+        <p class="card-bio">{{ inf.bio }}</p>
+        {% endif %}
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon"><svg class="icon icon-lg"><use href="#i-search"/></svg></div>
+    <h3>No influencers yet</h3>
+    <p>Check back soon — creators are joining this category!</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

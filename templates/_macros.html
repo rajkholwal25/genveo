@@ -1,0 +1,57 @@
+{# Avatar circle: profile picture if uploaded, else the first initial #}
+{% macro avatar(name, url, cls='') %}
+<div class="avatar {{ cls }}">
+  {%- if url -%}<img src="{{ url }}" alt="{{ name }}" loading="lazy">{%- else -%}{{ (name or '?')[0]|upper }}{%- endif -%}
+</div>
+{% endmacro %}
+
+{# Renders a category icon: uploaded image if present, else the emoji #}
+{% macro cat_icon(cat, cls='') %}
+{%- if cat.icon_url -%}
+<img src="{{ cat.icon_url }}" alt="{{ cat.name }}" class="cat-img {{ cls }}">
+{%- else -%}
+<span class="cat-emoji {{ cls }}">{{ cat.icon }}</span>
+{%- endif -%}
+{% endmacro %}
+
+{# Instagram-style swipeable photo gallery for a profile card #}
+{% macro gallery(photos, letter) %}
+<div class="ig-media" data-gallery>
+  {% if photos %}
+  <div class="ig-track">
+    {% for p in photos %}
+    <div class="ig-slide"><img src="{{ p.url }}" alt="Photo {{ loop.index }}" loading="lazy"></div>
+    {% endfor %}
+  </div>
+  {% if photos|length > 1 %}
+  <button class="ig-nav prev" type="button" aria-label="Previous photo">&#8249;</button>
+  <button class="ig-nav next" type="button" aria-label="Next photo">&#8250;</button>
+  <div class="ig-dots">
+    {% for p in photos %}<span class="ig-dot {% if loop.first %}active{% endif %}"></span>{% endfor %}
+  </div>
+  <span class="ig-count"><svg class="icon"><use href="#i-post"/></svg> {{ photos|length }}</span>
+  {% endif %}
+  {% else %}
+  <div class="ig-placeholder">
+    <div class="ig-panel"><span>{{ letter }}</span></div>
+    <small>No photos yet</small>
+  </div>
+  {% endif %}
+</div>
+{% endmacro %}
+
+{# Editable gallery thumbnails with delete buttons, for profile edit pages.
+   Delete uses a JS fetch (data-del) so we never nest a <form> inside the edit form. #}
+{% macro gallery_manager(photos, delete_endpoint) %}
+{% if photos %}
+<div class="photo-manager">
+  {% for p in photos %}
+  <div class="photo-thumb">
+    <img src="{{ p.url }}" alt="Photo {{ loop.index }}">
+    <button type="button" class="photo-del" data-del="{{ url_for(delete_endpoint, photo_id=p.id) }}"
+            aria-label="Delete photo" title="Delete">&times;</button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endmacro %}

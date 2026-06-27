@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% from "_macros.html" import gallery, cat_icon, avatar %}
+{% block title %}Influencer Dashboard — Genveo{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
+    <div style="display: flex; align-items: center; gap: 16px;">
+      {{ avatar(profile.full_name, profile.avatar_url, 'avatar-lg') }}
+      <div>
+        <h1>Welcome, {{ profile.full_name }}</h1>
+        <p>
+          {{ cat_icon(profile.category, 'cat-icon-sm') }} {{ profile.category.name }} ·
+          <a href="{{ profile.profile_url }}" target="_blank" rel="noopener" class="insta-link"><svg class="icon"><use href="#i-instagram"/></svg> @{{ profile.instagram_handle }}</a>
+        </p>
+      </div>
+    </div>
+    <a href="{{ url_for('influencer.profile') }}" class="btn btn-ghost btn-sm"><svg class="icon"><use href="#i-pencil"/></svg> Edit Profile</a>
+  </div>
+
+  <div class="stats-grid pricing-stats" style="margin-bottom: 40px;">
+    <div class="stat-card">
+      <div class="number">{{ profile.followers }}</div>
+      <div class="label">Followers</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">{{ profile.monthly_reach }}</div>
+      <div class="label">Monthly Reach</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">₹{{ "{:,.0f}".format(profile.reel_pricing) }}</div>
+      <div class="label">Reel Price</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">₹{{ "{:,.0f}".format(profile.story_pricing) }}</div>
+      <div class="label">Story Price</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">₹{{ "{:,.0f}".format(profile.post_pricing) }}</div>
+      <div class="label">Post Price</div>
+    </div>
+  </div>
+
+  <div class="gallery-panel">
+    <div class="panel-head">
+      <h2 class="section-title" style="margin: 0;"><svg class="icon"><use href="#i-post"/></svg> Your Photos</h2>
+      <a href="{{ url_for('influencer.profile') }}" class="btn btn-primary btn-sm"><svg class="icon"><use href="#i-plus"/></svg> Add Photos</a>
+    </div>
+    {% if profile.photos %}
+    <div class="photo-strip">
+      {% for p in profile.photos %}<img src="{{ p.url }}" alt="Your photo {{ loop.index }}" loading="lazy">{% endfor %}
+    </div>
+    {% else %}
+    <div class="photo-empty">
+      <svg class="icon icon-lg" style="color: var(--primary-soft)"><use href="#i-post"/></svg>
+      <span>Add at least 2 photos so brands can see your work on your card.</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <h2 class="section-title"><svg class="icon"><use href="#i-building"/></svg> Brands looking for {{ profile.category.name }} creators</h2>
+  {% if brands %}
+  <div class="ig-grid">
+    {% for brand in brands %}
+    <article class="ig-card">
+      <header class="ig-head">
+        {{ avatar(brand.company_name, brand.avatar_url) }}
+        <div class="ig-head-meta">
+          <h3>{{ brand.company_name }}</h3>
+          <span class="handle"><svg class="icon"><use href="#i-building"/></svg> {{ brand.industry or 'Brand' }}</span>
+        </div>
+      </header>
+
+      {{ gallery(brand.photos, brand.company_name[0]|upper) }}
+
+      <div class="ig-body">
+        {% if brand.description %}
+        <p class="card-bio" style="margin: 0;">{{ brand.description }}</p>
+        {% endif %}
+
+        {% if brand.website %}
+        <div class="card-email">
+          <svg class="icon"><use href="#i-globe"/></svg> <a href="{{ brand.website }}" target="_blank" rel="noopener" style="color: var(--primary-soft);">{{ brand.website }}</a>
+        </div>
+        {% endif %}
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon"><svg class="icon icon-lg"><use href="#i-building"/></svg></div>
+    <h3>No {{ profile.category.name }} brands yet</h3>
+    <p>When brands looking for {{ profile.category.name }} creators join, they'll show up here.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

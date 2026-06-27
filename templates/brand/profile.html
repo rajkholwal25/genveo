@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% from "_macros.html" import gallery_manager %}
+{% block title %}Edit Brand Profile — Genveo{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card" style="max-width: 560px;">
+    <h2>Edit Brand Profile</h2>
+    <p class="auth-subtitle">Update your details and showcase photos</p>
+
+    <form method="POST" action="{{ url_for('brand.profile') }}" enctype="multipart/form-data">
+      <div class="avatar-edit">
+        <label class="avatar-edit-circle" {% if profile.avatar_url %}data-has="1"{% endif %}>
+          <img src="{{ profile.avatar_url or '' }}" alt="" class="avatar-edit-img">
+          <span class="avatar-edit-initial">{{ (profile.company_name or '?')[0]|upper }}</span>
+          <span class="avatar-edit-overlay"><svg class="icon"><use href="#i-post"/></svg></span>
+          <input type="file" name="avatar" accept="image/*">
+        </label>
+        <div class="avatar-edit-text">
+          <strong>Brand logo / picture</strong>
+          <small>Click the circle to upload — it replaces the initial on your card</small>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="company_name">Company Name</label>
+        <input type="text" id="company_name" name="company_name" value="{{ profile.company_name }}" required>
+      </div>
+
+      <div class="form-group">
+        <label for="category_id">Category you want creators in</label>
+        <select id="category_id" name="category_id" required>
+          {% for cat in categories %}
+          <option value="{{ cat.id }}" {% if cat.id == profile.category_id %}selected{% endif %}>{{ cat.icon }} {{ cat.name }}</option>
+          {% endfor %}
+        </select>
+        <small class="field-hint">You'll appear on the dashboards of influencers in this category</small>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="industry">Industry</label>
+          <input type="text" id="industry" name="industry" value="{{ profile.industry or '' }}" placeholder="e.g. Beauty, Tech">
+        </div>
+        <div class="form-group">
+          <label for="website">Website</label>
+          <input type="url" id="website" name="website" value="{{ profile.website or '' }}" placeholder="https://...">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="contact_email">Contact Email</label>
+        <input type="email" id="contact_email" name="contact_email" value="{{ profile.contact_email or '' }}" placeholder="hello@brand.com">
+      </div>
+
+      <div class="form-group">
+        <label for="description">About your brand</label>
+        <textarea id="description" name="description" placeholder="Tell creators about your brand...">{{ profile.description or '' }}</textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Showcase Photos <span class="field-hint" style="display:inline">({{ profile.photos|length }}/6 — add at least 2)</span></label>
+        {{ gallery_manager(profile.photos, 'brand.delete_profile_photo') }}
+        <label class="file-drop">
+          <svg class="icon"><use href="#i-post"/></svg>
+          <span>Click to choose photos (JPG, PNG, WEBP)</span>
+          <span class="file-names"></span>
+          <input type="file" name="photos" accept="image/*" multiple>
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+      <a href="{{ url_for('brand.dashboard') }}" class="btn btn-ghost btn-block" style="margin-top: 12px;">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

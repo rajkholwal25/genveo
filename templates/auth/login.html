@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Login — Genveo{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+    <h2>Welcome back</h2>
+    <p class="auth-subtitle">Sign in to your account</p>
+
+    <div class="role-tabs">
+      <a href="{{ url_for('auth.login', role='brand') }}" class="role-tab {% if role == 'brand' %}active{% endif %}" data-role="brand"><svg class="icon"><use href="#i-building"/></svg> Brand</a>
+      <a href="{{ url_for('auth.login', role='influencer') }}" class="role-tab {% if role == 'influencer' %}active{% endif %}" data-role="influencer"><svg class="icon"><use href="#i-star"/></svg> Influencer</a>
+      <a href="{{ url_for('auth.login', role='admin') }}" class="role-tab {% if role == 'admin' %}active{% endif %}" data-role="admin"><svg class="icon"><use href="#i-shield"/></svg> Admin</a>
+    </div>
+
+    <form method="POST" action="{{ url_for('auth.login', role=role) }}">
+      <input type="hidden" name="role" value="{{ role }}">
+
+      <div class="form-group">
+        <label for="login_id">Email, username, or mobile</label>
+        <input type="text" id="login_id" name="login_id"
+               placeholder="you@email.com / yourname / 9876543210" required autofocus>
+        <small class="field-hint">Use any one — email, username, or 10-digit mobile number</small>
+      </div>
+
+      <div class="form-group">
+        <div class="label-row">
+          <label for="password">Password</label>
+          <a href="{{ url_for('auth.forgot_password') }}" class="forgot-link">Forgot password?</a>
+        </div>
+        <input type="password" id="password" name="password" placeholder="••••••••" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+    </form>
+
+    {% if role != 'admin' %}
+    <p class="auth-footer">
+      Don't have an account?
+      <a href="{{ url_for('auth.signup', role=role) }}">Create one</a>
+    </p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

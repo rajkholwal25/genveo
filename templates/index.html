@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Influence Connect — Brands & Creators{% endblock %}
+
+{% block content %}
+<section class="hero container">
+  <div class="hero-badge">
+    <svg class="icon"><use href="#i-spark"/></svg> India's #1 Influencer Marketplace
+  </div>
+  <h1>Where <span class="gradient-text">brands</span><br>meet <span class="gradient-text">creators</span></h1>
+  <p>Discover creators by category, compare reach &amp; pricing, and launch campaigns that convert. Built for brands and influencers who mean business.</p>
+  <div class="hero-cta">
+    <a href="{{ url_for('auth.signup', role='brand') }}" class="btn btn-primary">Register as Brand<svg class="icon"><use href="#i-arrow-right"/></svg></a>
+    <a href="{{ url_for('auth.signup', role='influencer') }}" class="btn btn-ghost">Join as Influencer</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="hero-stat"><span class="hero-stat-num">12K+</span><span class="hero-stat-label">Creators</span></div>
+    <div class="hero-stat"><span class="hero-stat-num">850+</span><span class="hero-stat-label">Brands</span></div>
+    <div class="hero-stat"><span class="hero-stat-num">40M+</span><span class="hero-stat-label">Monthly reach</span></div>
+  </div>
+</section>
+
+<section class="container role-cards">
+  <div class="role-card" data-accent="brand">
+    <span class="role-icon"><svg class="icon icon-lg"><use href="#i-building"/></svg></span>
+    <h3>For Brands</h3>
+    <p>Browse categories like Sports, Study &amp; Makeup. View creator cards with followers, reach, email &amp; reel/story/post pricing.</p>
+    <div class="role-actions">
+      <a href="{{ url_for('auth.signup', role='brand') }}" class="btn btn-primary btn-sm">Sign Up</a>
+      <a href="{{ url_for('auth.login', role='brand') }}" class="btn btn-ghost btn-sm">Login</a>
+    </div>
+  </div>
+
+  <div class="role-card" data-accent="influencer">
+    <span class="role-icon"><svg class="icon icon-lg"><use href="#i-star"/></svg></span>
+    <h3>For Influencers</h3>
+    <p>Register your profile, set your rate per format, and get discovered by brands looking for creators in your niche.</p>
+    <div class="role-actions">
+      <a href="{{ url_for('auth.signup', role='influencer') }}" class="btn btn-primary btn-sm">Sign Up</a>
+      <a href="{{ url_for('auth.login', role='influencer') }}" class="btn btn-ghost btn-sm">Login</a>
+    </div>
+  </div>
+
+  <div class="role-card" data-accent="admin">
+    <span class="role-icon"><svg class="icon icon-lg"><use href="#i-shield"/></svg></span>
+    <h3>For Admin</h3>
+    <p>Manage users, categories, and oversee the entire platform from a powerful admin dashboard.</p>
+    <div class="role-actions">
+      <a href="{{ url_for('auth.login', role='admin') }}" class="btn btn-primary btn-sm">Admin Login</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

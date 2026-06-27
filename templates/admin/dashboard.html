@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+{% from "_macros.html" import cat_icon %}
+{% block title %}Admin Dashboard — Genveo{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="dashboard-header">
+    <h1>Admin Panel</h1>
+    <p>Manage brands, influencers, and categories across the platform</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="number">{{ stats.users }}</div>
+      <div class="label">Total Users</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">{{ stats.brands }}</div>
+      <div class="label">Brands</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">{{ stats.influencers }}</div>
+      <div class="label">Influencers</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">{{ stats.categories }}</div>
+      <div class="label">Categories</div>
+    </div>
+  </div>
+
+  {# ---------------- Categories ---------------- #}
+  <div class="admin-section">
+    <h2 class="section-title"><svg class="icon"><use href="#i-grid"/></svg> Categories</h2>
+
+    <form class="add-category-form" method="POST" action="{{ url_for('admin.add_category') }}" enctype="multipart/form-data">
+      <input type="text" name="name" placeholder="Category name" required>
+      <input type="text" name="icon" placeholder="Emoji" value="✨" style="max-width:90px">
+      <label class="icon-upload" title="Upload an icon image">
+        <svg class="icon"><use href="#i-post"/></svg>
+        <span class="icon-upload-name">Icon image</span>
+        <input type="file" name="icon_file" accept="image/*">
+      </label>
+      <input type="color" name="color" value="#10b981" title="Accent color">
+      <button type="submit" class="btn btn-primary btn-sm"><svg class="icon"><use href="#i-plus"/></svg> Add</button>
+    </form>
+
+    <div class="admin-search-wrap">
+      <svg class="icon"><use href="#i-search"/></svg>
+      <input type="text" class="admin-search" data-search="#cat-table" placeholder="Search categories by name…">
+    </div>
+    <div class="table-scroll">
+      <table class="admin-table" id="cat-table">
+        <thead>
+          <tr><th>Icon</th><th>Name</th><th>Slug</th><th>Influencers</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for cat in categories %}
+          <tr>
+            <td>{{ cat_icon(cat, 'cat-icon-sm') }}</td>
+            <td>{{ cat.name }}</td>
+            <td>{{ cat.slug }}</td>
+            <td>{{ cat.influencers|length }}</td>
+            <td class="row-actions">
+              <form method="POST" action="{{ url_for('admin.delete_category', category_id=cat.id) }}"
+                    onsubmit="return confirm('Delete category {{ cat.name }}?')">
+                <button type="submit" class="btn-danger" title="Delete"><svg class="icon"><use href="#i-trash"/></svg></button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {# ---------------- Brands ---------------- #}
+  <div class="admin-section">
+    <h2 class="section-title"><svg class="icon"><use href="#i-building"/></svg> Brands <span class="count-pill">{{ brands|length }}</span></h2>
+
+    <details class="add-panel">
+      <summary><svg class="icon"><use href="#i-plus"/></svg> Add a brand</summary>
+      <form method="POST" action="{{ url_for('admin.add_brand') }}" class="admin-add-form">
+        <div class="form-row">
+          <div class="form-group"><label>Company Name *</label><input type="text" name="company_name" required></div>
+          <div class="form-group">
+            <label>Category</label>
+            <select name="category_id">
+              <option value="">— none —</option>
+              {% for cat in categories %}<option value="{{ cat.id }}">{{ cat.icon }} {{ cat.name }}</option>{% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Industry</label><input type="text" name="industry" placeholder="e.g. Beauty"></div>
+          <div class="form-group"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Email *</label><input type="email" name="email" required></div>
+          <div class="form-group"><label>Password *</label><input type="text" name="password" required placeholder="set a password"></div>
+        </div>
+        <div class="form-group"><label>Website</label><input type="url" name="website" placeholder="https://..."></div>
+        <div class="form-group"><label>About</label><textarea name="description" placeholder="Short description"></textarea></div>
+        <button type="submit" class="btn btn-primary btn-sm">Create Brand</button>
+      </form>
+    </details>
+
+    {% if brands %}
+    <div class="admin-search-wrap">
+      <svg class="icon"><use href="#i-search"/></svg>
+      <input type="text" class="admin-search" data-search="#brand-table" placeholder="Search brands by name, email, mobile…">
+    </div>
+    <div class="table-scroll">
+      <table class="admin-table" id="brand-table">
+        <thead><tr><th>Company</th><th>Category</th><th>Industry</th><th>Email</th><th>Mobile</th><th>Photos</th><th></th></tr></thead>
+        <tbody>
+          {% for b in brands %}
+          <tr>
+            <td><strong>{{ b.company_name }}</strong></td>
+            <td>{% if b.category %}{{ cat_icon(b.category, 'cat-icon-sm') }} {{ b.category.name }}{% else %}—{% endif %}</td>
+            <td>{{ b.industry or '—' }}</td>
+            <td>{{ b.contact_email or b.user.email }}</td>
+            <td>{{ b.user.mobile or '—' }}</td>
+            <td>{{ b.photos|length }}</td>
+            <td class="row-actions">
+              <form method="POST" action="{{ url_for('admin.delete_brand', brand_id=b.id) }}"
+                    onsubmit="return confirm('Delete brand {{ b.company_name }} and its account?')">
+                <button type="submit" class="btn-danger" title="Delete"><svg class="icon"><use href="#i-trash"/></svg></button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="muted-line">No brands yet.</p>
+    {% endif %}
+  </div>
+
+  {# ---------------- Influencers ---------------- #}
+  <div class="admin-section">
+    <h2 class="section-title"><svg class="icon"><use href="#i-star"/></svg> Influencers <span class="count-pill">{{ influencers|length }}</span></h2>
+
+    <details class="add-panel">
+      <summary><svg class="icon"><use href="#i-plus"/></svg> Add an influencer</summary>
+      <form method="POST" action="{{ url_for('admin.add_influencer') }}" class="admin-add-form">
+        <div class="form-row">
+          <div class="form-group"><label>Full Name *</label><input type="text" name="full_name" required></div>
+          <div class="form-group">
+            <label>Category *</label>
+            <select name="category_id" required>
+              <option value="">Select…</option>
+              {% for cat in categories %}<option value="{{ cat.id }}">{{ cat.icon }} {{ cat.name }}</option>{% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Email *</label><input type="email" name="email" required></div>
+          <div class="form-group"><label>Password *</label><input type="text" name="password" required placeholder="set a password"></div>
+        </div>
+        <div class="form-group"><label>Instagram URL or @handle *</label><input type="text" name="instagram_handle" required placeholder="https://instagram.com/handle"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Followers</label><input type="text" name="followers" placeholder="125K"></div>
+          <div class="form-group"><label>Monthly Reach</label><input type="text" name="monthly_reach" placeholder="450K"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Reel ₹</label><input type="number" name="reel_pricing" min="0" step="100" placeholder="15000"></div>
+          <div class="form-group"><label>Story ₹</label><input type="number" name="story_pricing" min="0" step="100" placeholder="5000"></div>
+          <div class="form-group"><label>Post ₹</label><input type="number" name="post_pricing" min="0" step="100" placeholder="8000"></div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">Create Influencer</button>
+      </form>
+    </details>
+
+    {% if influencers %}
+    <div class="admin-search-wrap">
+      <svg class="icon"><use href="#i-search"/></svg>
+      <input type="text" class="admin-search" data-search="#inf-table" placeholder="Search influencers by name, handle, email, mobile…">
+    </div>
+    <div class="table-scroll">
+      <table class="admin-table" id="inf-table">
+        <thead><tr><th>Name</th><th>Category</th><th>Handle</th><th>Email</th><th>Mobile</th><th>Followers</th><th>Photos</th><th></th></tr></thead>
+        <tbody>
+          {% for inf in influencers %}
+          <tr>
+            <td><strong>{{ inf.full_name }}</strong></td>
+            <td>{{ cat_icon(inf.category, 'cat-icon-sm') }} {{ inf.category.name }}</td>
+            <td>@{{ inf.instagram_handle }}</td>
+            <td>{{ inf.user.email }}</td>
+            <td>{{ inf.user.mobile or '—' }}</td>
+            <td>{{ inf.followers }}</td>
+            <td>{{ inf.photos|length }}</td>
+            <td class="row-actions">
+              <form method="POST" action="{{ url_for('admin.delete_influencer', influencer_id=inf.id) }}"
+                    onsubmit="return confirm('Delete influencer {{ inf.full_name }} and its account?')">
+                <button type="submit" class="btn-danger" title="Delete"><svg class="icon"><use href="#i-trash"/></svg></button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="muted-line">No influencers yet.</p>
+    {% endif %}
+  </div>
+
+  {# ---------------- All Users ---------------- #}
+  <div class="admin-section">
+    <h2 class="section-title"><svg class="icon"><use href="#i-users"/></svg> All Users</h2>
+    <div class="admin-search-wrap">
+      <svg class="icon"><use href="#i-search"/></svg>
+      <input type="text" class="admin-search" data-search="#user-table" placeholder="Search users by email, username, mobile, role…">
+    </div>
+    <div class="table-scroll">
+      <table class="admin-table" id="user-table">
+        <thead><tr><th>Email</th><th>Username</th><th>Mobile</th><th>Role</th><th>Joined</th></tr></thead>
+        <tbody>
+          {% for user in users %}
+          <tr>
+            <td>{{ user.email }}</td>
+            <td>{{ user.username or '—' }}</td>
+            <td>{{ user.mobile or '—' }}</td>
+            <td><span class="badge badge-{{ user.role }}">{{ user.role }}</span></td>
+            <td>{{ user.created_at.strftime('%d %b %Y') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

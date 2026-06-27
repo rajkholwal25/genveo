@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block title %}Sign Up — Influence Connect{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card" style="max-width: 520px;">
+    <h2>Create account</h2>
+    <p class="auth-subtitle">Join as a {{ role }}</p>
+
+    <div class="role-tabs">
+      <a href="{{ url_for('auth.signup', role='brand') }}" class="role-tab {% if role == 'brand' %}active{% endif %}" data-role="brand"><svg class="icon"><use href="#i-building"/></svg> Brand</a>
+      <a href="{{ url_for('auth.signup', role='influencer') }}" class="role-tab {% if role == 'influencer' %}active{% endif %}" data-role="influencer"><svg class="icon"><use href="#i-star"/></svg> Influencer</a>
+    </div>
+
+    <form method="POST" action="{{ url_for('auth.signup', role=role) }}">
+      <input type="hidden" name="role" value="{{ role }}">
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="you@email.com" required>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="username">Username *</label>
+          <input type="text" id="username" name="username" placeholder="yourname" required
+                 minlength="3" maxlength="30" pattern="[a-zA-Z0-9_]{3,30}"
+                 title="3–30 characters: letters, numbers, underscore">
+          <small class="field-hint">Used to log in — letters, numbers, underscore only</small>
+        </div>
+        <div class="form-group">
+          <label for="mobile">Mobile Number *</label>
+          <input type="tel" id="mobile" name="mobile" placeholder="9876543210" required
+                 pattern="[0-9+\s\-]{10,15}" title="10-digit Indian mobile number">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="••••••••" required minlength="6">
+        </div>
+        <div class="form-group">
+          <label for="confirm_password">Confirm Password</label>
+          <input type="password" id="confirm_password" name="confirm_password" placeholder="••••••••" required>
+        </div>
+      </div>
+
+      {% if role == 'brand' %}
+      <div class="form-group">
+        <label for="company_name">Company Name *</label>
+        <input type="text" id="company_name" name="company_name" placeholder="Your Brand Name" required>
+      </div>
+      <div class="form-group">
+        <label for="category_id">Category you want creators in *</label>
+        <select id="category_id" name="category_id" required>
+          <option value="">Select a category</option>
+          {% for cat in categories %}
+          <option value="{{ cat.id }}">{{ cat.icon }} {{ cat.name }}</option>
+          {% endfor %}
+        </select>
+        <small class="field-hint">You'll be shown to influencers in this category</small>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="industry">Industry</label>
+          <input type="text" id="industry" name="industry" placeholder="e.g. Beauty, Tech">
+        </div>
+        <div class="form-group">
+          <label for="website">Website</label>
+          <input type="url" id="website" name="website" placeholder="https://...">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="description">About your brand</label>
+        <textarea id="description" name="description" placeholder="Tell influencers about your brand..."></textarea>
+      </div>
+
+      {% elif role == 'influencer' %}
+      <div class="form-group">
+        <label for="full_name">Full Name *</label>
+        <input type="text" id="full_name" name="full_name" placeholder="Your name" required>
+      </div>
+      <div class="form-group">
+        <label for="category_id">Category *</label>
+        <select id="category_id" name="category_id" required>
+          <option value="">Select a category</option>
+          {% for cat in categories %}
+          <option value="{{ cat.id }}">{{ cat.icon }} {{ cat.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="instagram_handle">Instagram Profile URL or @username *</label>
+        <input type="text" id="instagram_handle" name="instagram_handle"
+               placeholder="https://instagram.com/yourhandle" required>
+        <small class="field-hint">Paste full Instagram link — we auto-fetch your @username</small>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="followers">Followers</label>
+          <input type="text" id="followers" name="followers" placeholder="1.1M or 125K">
+        </div>
+        <div class="form-group">
+          <label for="monthly_reach">Monthly Reach</label>
+          <input type="text" id="monthly_reach" name="monthly_reach" placeholder="2.5M or 450K">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="reel_pricing">Reel Pricing (₹) *</label>
+          <input type="number" id="reel_pricing" name="reel_pricing" placeholder="15000" required min="0" step="100">
+        </div>
+        <div class="form-group">
+          <label for="story_pricing">Story Pricing (₹) *</label>
+          <input type="number" id="story_pricing" name="story_pricing" placeholder="5000" required min="0" step="100">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="post_pricing">Post Pricing (₹) *</label>
+        <input type="number" id="post_pricing" name="post_pricing" placeholder="8000" required min="0" step="100">
+      </div>
+      <div class="form-group">
+        <label for="bio">Bio</label>
+        <textarea id="bio" name="bio" placeholder="Tell brands about your content..."></textarea>
+      </div>
+      {% endif %}
+
+      <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+    </form>
+
+    <p class="auth-footer">
+      Already have an account?
+      <a href="{{ url_for('auth.login', role=role) }}">Sign in</a>
+    </p>
+  </div>
+</div>
+{% endblock %}
